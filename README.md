@@ -177,6 +177,30 @@ A aplicação estará rodando em `http://localhost:3001`, ou na porta disponíve
 - Sistema de Migrations
 - Reflect Metadata
 
+## Docker
+
+O projeto utiliza Docker para containerização com três serviços principais:
+- Frontend (brain-agriculture-frontend): Porta 3005
+- Backend (brain-agriculture-backend): Porta 3006
+- PostgreSQL (brain-agriculture-postgres): Porta 5432
+
+## APIs Disponíveis
+
+Base URL: `http://147.79.83.158:3006`
+
+### Endpoints
+
+- Dashboard: `http://147.79.83.158:3006/dashboard`
+  - Retorna estatísticas gerais e dados para gráficos
+
+- Produtores: `http://147.79.83.158:3006/produtores`
+  - Lista e gerencia informações dos produtores rurais
+
+### URLs de Produção
+
+- Frontend: `http://147.79.83.158:3005`
+- Backend: `http://147.79.83.158:3006`
+
 ### Frontend
 - React 
 - TypeScript
@@ -273,5 +297,4 @@ Senior Fullstack Developer
 ![Cadastro](Serasa-Brain-Agriculture-front-2.png)
 
 ![Editar](Serasa-Brain-Agriculture-front-3.png)
-
 
