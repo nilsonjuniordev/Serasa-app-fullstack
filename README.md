@@ -129,7 +129,7 @@ DB_DATABASE=brain_agriculture
 ```bash
 npm run dev # Atenção aqui: executar run dev para iniciar o server corretamente
 ```
-O servidor estará rodando em `http://localhost:3000`
+O servidor estará rodando na porta `3006`
 
 ### Frontend
 
@@ -148,7 +148,7 @@ npm install
 npm start # Atenção aqui: Iniciar a aplicação somente após iniciar o backend para não dar conflito de porta
 ```
 
-A aplicação estará rodando em `http://localhost:3001`, ou na porta disponível
+A aplicação estará rodando na porta `3005`, ou na porta disponível
 
 ## Funcionalidades
 
