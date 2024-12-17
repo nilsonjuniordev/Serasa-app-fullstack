@@ -17,7 +17,7 @@ const initialState: ProducerState = {
 export const fetchProducers = createAsyncThunk(
   'producer/fetchProducers',
   async () => {
-    const response = await axios.get('http://localhost:3000/produtores');
+    const response = await axios.get('http://147.79.83.158:3006/produtores');
     return response.data;
   }
 );
@@ -25,7 +25,7 @@ export const fetchProducers = createAsyncThunk(
 export const deleteProducer = createAsyncThunk(
   'producer/deleteProducer',
   async (id: string) => {
-    await axios.delete(`http://localhost:3000/produtores/${id}`);
+    await axios.delete(`http://147.79.83.158:3006/produtores/${id}`);
     return id;
   }
 );

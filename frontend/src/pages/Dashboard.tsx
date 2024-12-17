@@ -48,7 +48,7 @@ const Dashboard = () => {
 
   const fetchDashboardData = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/dashboard');
+      const response = await axios.get('http://147.79.83.158:3006/dashboard');
       setDashboardData(response.data);
     } catch (error) {
       toast.error('Erro ao carregar dados do dashboard');

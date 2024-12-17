@@ -36,7 +36,7 @@ const Producers = () => {
 
   const fetchProducers = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/produtores');
+      const response = await axios.get('http://147.79.83.158:3006/produtores');
       setProducers(response.data);
     } catch (error) {
       toast.error('Erro ao carregar produtores');
@@ -47,7 +47,7 @@ const Producers = () => {
   const handleDelete = async (id: number) => {
     if (window.confirm('Tem certeza que deseja excluir este produtor?')) {
       try {
-        await axios.delete(`http://localhost:3000/produtores/${id}`);
+        await axios.delete(`http://147.79.83.158:3006/produtores/${id}`);
         toast.success('Produtor excluído com sucesso!');
         fetchProducers();
       } catch (error) {

@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import express from "express";
+import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import * as dotenv from "dotenv";
 import { AppDataSource } from "./data-source";
@@ -10,9 +10,9 @@ console.log("Environment variables loaded");
 
 const app = express();
 
-// Confg CORS
+// Config CORS
 app.use(cors({
-  origin: 'http://localhost:3001', // Frontend URL
+  origin: '*', 
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type']
 }));
@@ -20,22 +20,22 @@ app.use(cors({
 app.use(express.json());
 
 // Logs das reqs
-app.use((req, res, next) => {
-  console.log('API is workin:', res);
+app.use((req: Request, res: Response, next: NextFunction) => {
+  console.log('API is working:', res);
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
   next();
 });
 
 // testes
-app.get("/", (req, res) => {
-  console.log('API is workin:', req);
+app.get("/", (req: Request, res: Response) => {
+  console.log('API is working:', req);
   res.json({ message: "API is working" });
 });
 
 // Rotas 
 app.use(routes);
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3006;
 
 AppDataSource.initialize()
   .then(() => {
@@ -51,6 +51,6 @@ AppDataSource.initialize()
       console.log("  GET  /dashboard");
     });
   })
-  .catch(error => {
+  .catch((error: Error) => {
     console.error("Error during Data Source initialization:", error);
   }); 

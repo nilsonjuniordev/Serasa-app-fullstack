@@ -129,10 +129,10 @@ const ProducerForm: React.FC<ProducerFormProps> = ({ producer, onClose, onSucces
 
     try {
       if (producer?.id) {
-        await axios.put(`http://localhost:3000/produtores/${producer.id}`, formData);
+        await axios.put(`http://147.79.83.158:3006/produtores/${producer.id}`, formData);
         toast.success('Produtor atualizado com sucesso!');
       } else {
-        await axios.post('http://localhost:3000/produtores', formData);
+        await axios.post('http://147.79.83.158:3006/produtores', formData);
         toast.success('Produtor cadastrado com sucesso!');
       }
       onSuccess();
