@@ -1,0 +1,27 @@
+{
+  "name": "brain-agriculture",
+  "version": "1.0.0",
+  "description": "Sistema de gerenciamento de produtores rurais",
+  "scripts": {
+    "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
+    "start:backend": "cd backend && npm run dev",
+    "start:frontend": "cd frontend && npm start",
+    "install:all": "npm install && cd frontend && npm install && cd ../backend && npm install",
+    "build": "cd backend && npm run build && cd ../frontend && npm run build",
+    "test": "cd backend && npm test && cd ../frontend && npm test",
+    "lint": "cd backend && npm run lint && cd ../frontend && npm run lint",
+    "clean": "rimraf node_modules && cd frontend && rimraf node_modules && cd ../backend && rimraf node_modules"
+  },
+  "devDependencies": {
+    "concurrently": "^8.0.0",
+    "rimraf": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ]
+}
