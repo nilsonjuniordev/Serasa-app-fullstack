@@ -213,7 +213,7 @@ Base URL: `http://147.79.83.158:3006`
 - React Toastify para notificações
 - Jest e Testing Library para testes
 
-## Boas Práticas Implementadas
+## Boas Práticas  Implementadas
 
 ### Arquitetura e Design
 - Clean Code
