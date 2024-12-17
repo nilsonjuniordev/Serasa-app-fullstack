@@ -237,40 +237,7 @@ A aplicação estará rodando em `http://localhost:3001`, ou na porta disponíve
 - `hotfix/*`: Branches para correções urgentes
 - `release/*`: Branches para preparação de releases
 
-#### .gitignore
-Arquivos e diretórios ignorados:
-```
-# Dependencies
-node_modules/
-/.pnp
-.pnp.js
-
-# Environment
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# Build
-/build
-/dist
-
-# Logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# IDE
-.idea/
-.vscode/
-*.swp
-*.swo
-
-# Sistema
-.DS_Store
-Thumbs.db
-```
+#### .gitignore na raiz do projeto
 
 #### Workflow Recomendado
 1. Crie uma branch para sua feature:
