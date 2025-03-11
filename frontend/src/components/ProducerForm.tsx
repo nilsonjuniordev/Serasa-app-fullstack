@@ -15,11 +15,15 @@ import {
   Box,
   useTheme,
   useMediaQuery,
+  IconButton,
+  Typography,
+  Chip,
 } from '@mui/material';
+import { Add as AddIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-import { Producer } from '../types/Producer';
-import { validateDocument, formatDocument } from '../utils/validators.ts';
+import { Producer, ProducerFormData, CreateHarvest, CreateHarvestCrop } from '../types/producer.types';
+import { validateDocument, formatDocument } from '../utils/validators';
 
 interface ProducerFormProps {
   producer?: Producer | null;
@@ -39,7 +43,7 @@ const ProducerForm: React.FC<ProducerFormProps> = ({ producer, onClose, onSucces
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   
-  const [formData, setFormData] = useState<Producer>({
+  const [formData, setFormData] = useState<ProducerFormData>({
     name: '',
     document: '',
     farmName: '',
@@ -48,6 +52,11 @@ const ProducerForm: React.FC<ProducerFormProps> = ({ producer, onClose, onSucces
     totalArea: 0,
     arableArea: 0,
     vegetationArea: 0,
+    harvests: [],
+  });
+
+  const [currentHarvest, setCurrentHarvest] = useState<CreateHarvest>({
+    year: new Date().getFullYear(),
     crops: [],
   });
 
@@ -55,9 +64,60 @@ const ProducerForm: React.FC<ProducerFormProps> = ({ producer, onClose, onSucces
 
   useEffect(() => {
     if (producer) {
-      setFormData(producer);
+      setFormData({
+        name: producer.name,
+        document: producer.document,
+        farmName: producer.farmName,
+        city: producer.city,
+        state: producer.state,
+        totalArea: producer.totalArea,
+        arableArea: producer.arableArea,
+        vegetationArea: producer.vegetationArea,
+        harvests: producer.harvests.map(h => ({
+          year: h.year,
+          crops: h.crops.map(c => ({ cropName: c.cropName })),
+        })),
+      });
     }
   }, [producer]);
+
+  const handleAddCrop = (cropName: string) => {
+    setCurrentHarvest(prev => ({
+      ...prev,
+      crops: [...prev.crops, { cropName }],
+    }));
+  };
+
+  const handleRemoveCrop = (index: number) => {
+    setCurrentHarvest(prev => ({
+      ...prev,
+      crops: prev.crops.filter((_, i) => i !== index),
+    }));
+  };
+
+  const handleAddHarvest = () => {
+    if (currentHarvest.crops.length === 0) {
+      toast.error('Adicione pelo menos uma cultura à safra');
+      return;
+    }
+
+    setFormData(prev => ({
+      ...prev,
+      harvests: [...(prev.harvests || []), currentHarvest],
+    }));
+
+    setCurrentHarvest({
+      year: new Date().getFullYear(),
+      crops: [],
+    });
+  };
+
+  const handleRemoveHarvest = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      harvests: (prev.harvests || []).filter((_, i) => i !== index),
+    }));
+  };
 
   const validateForm = (): boolean => {
     const newErrors: {[key: string]: string} = {};
@@ -78,7 +138,6 @@ const ProducerForm: React.FC<ProducerFormProps> = ({ producer, onClose, onSucces
     if (!formData.farmName.trim()) newErrors.farmName = 'Nome da fazenda é obrigatório';
     if (!formData.city.trim()) newErrors.city = 'Cidade é obrigatória';
     if (!formData.state) newErrors.state = 'Estado é obrigatório';
-    if (formData.crops.length === 0) newErrors.crops = 'Selecione pelo menos uma cultura';
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -88,32 +147,41 @@ const ProducerForm: React.FC<ProducerFormProps> = ({ producer, onClose, onSucces
     const { name, value } = e.target;
     
     if (name === 'document') {
-      // Formata o documento enquanto o usuário digita
-      setFormData(prev => ({
+      setFormData((prev: ProducerFormData) => ({
         ...prev,
         [name]: formatDocument(value),
       }));
     } else {
-      setFormData(prev => ({
+      setFormData((prev: ProducerFormData) => ({
         ...prev,
         [name]: name.includes('Area') ? Number(value) : value,
       }));
     }
 
-    // Limpa o erro do campo quando o usuário começa a digitar
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
   };
 
-  const handleSelectChange = (e: SelectChangeEvent<string | string[]>) => {
+  const handleStateChange = (e: SelectChangeEvent<string>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: value,
     }));
     
-    // Limpa o erro do campo quando o usuário seleciona um valor
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: '' }));
+    }
+  };
+
+  const handleCropsChange = (e: SelectChangeEvent<string[]>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: typeof value === 'string' ? value.split(',') : value,
+    }));
+    
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
@@ -214,7 +282,7 @@ const ProducerForm: React.FC<ProducerFormProps> = ({ producer, onClose, onSucces
                   label="Estado"
                   name="state"
                   value={formData.state}
-                  onChange={handleSelectChange}
+                  onChange={handleStateChange}
                   required
                 >
                   {estados.map(estado => (
@@ -270,28 +338,90 @@ const ProducerForm: React.FC<ProducerFormProps> = ({ producer, onClose, onSucces
               />
             </Grid>
             <Grid item xs={12}>
-              <FormControl fullWidth error={!!errors.crops}>
-                <InputLabel>Culturas</InputLabel>
-                <Select
-                  multiple
-                  label="Culturas"
-                  name="crops"
-                  value={formData.crops}
-                  onChange={handleSelectChange}
-                  required
-                >
-                  {culturas.map(cultura => (
-                    <MenuItem key={cultura} value={cultura} sx={{mb:-1}}>
-                      {cultura}
-                    </MenuItem>
+              <Box mb={2}>
+                <Typography variant="h6">Safras</Typography>
+              </Box>
+              
+              <Box mb={2}>
+                <Grid container spacing={2}>
+                  <Grid item xs={12} sm={4}>
+                    <TextField
+                      fullWidth
+                      type="number"
+                      label="Ano da Safra"
+                      value={currentHarvest.year}
+                      onChange={(e) => setCurrentHarvest(prev => ({
+                        ...prev,
+                        year: Number(e.target.value),
+                      }))}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <FormControl fullWidth>
+                      <InputLabel>Culturas</InputLabel>
+                      <Select
+                        value=""
+                        onChange={(e) => handleAddCrop(e.target.value)}
+                      >
+                        {culturas.map(cultura => (
+                          <MenuItem key={cultura} value={cultura}>
+                            {cultura}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                  <Grid item xs={12} sm={2}>
+                    <Button
+                      fullWidth
+                      variant="contained"
+                      onClick={handleAddHarvest}
+                      disabled={currentHarvest.crops.length === 0}
+                    >
+                      Adicionar Safra
+                    </Button>
+                  </Grid>
+                </Grid>
+
+                <Box mt={1}>
+                  {currentHarvest.crops.map((crop, index) => (
+                    <Chip
+                      key={index}
+                      label={crop.cropName}
+                      onDelete={() => handleRemoveCrop(index)}
+                      sx={{ m: 0.5 }}
+                    />
                   ))}
-                </Select>
-                {errors.crops && (
-                  <Box component="span" sx={{ color: 'error.main', fontSize: '0.75rem', mt: 0.5 }}>
-                    {errors.crops}
+                </Box>
+              </Box>
+
+              <Box>
+                {formData.harvests?.map((harvest, harvestIndex) => (
+                  <Box key={harvestIndex} mb={2} p={2} border={1} borderColor="divider" borderRadius={1}>
+                    <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+                      <Typography variant="subtitle1">
+                        Safra {harvest.year}
+                      </Typography>
+                      <IconButton
+                        size="small"
+                        color="error"
+                        onClick={() => handleRemoveHarvest(harvestIndex)}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </Box>
+                    <Box display="flex" flexWrap="wrap" gap={1}>
+                      {harvest.crops.map((crop, cropIndex) => (
+                        <Chip
+                          key={cropIndex}
+                          label={crop.cropName}
+                          variant="outlined"
+                        />
+                      ))}
+                    </Box>
                   </Box>
-                )}
-              </FormControl>
+                ))}
+              </Box>
             </Grid>
           </Grid>
         </DialogContent>

@@ -18,7 +18,7 @@ import {
 import MenuIcon from '@mui/icons-material/Menu';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import PeopleIcon from '@mui/icons-material/People';
-import serasaLogo from '../assets/SerasaExperianLogo2.webp';
+import serasaLogo from '../assets/logo.webp';
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -122,11 +122,14 @@ const Navbar = () => {
           keepMounted: true,
         }}
         sx={{
-          backgroundColor: theme.palette.primary.main, color: theme.palette.common.white,
           display: { xs: 'block', sm: 'none' },
-          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: 240 },
+          '& .MuiDrawer-paper': {
+            boxSizing: 'border-box',
+            width: 240,
+            backgroundColor: theme.palette.primary.main,
+            color: theme.palette.common.white,
+          },
         }}
-
       >
         {drawer}
       </Drawer>

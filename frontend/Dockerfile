@@ -1,4 +1,5 @@
-FROM node:18-alpine
+# Build stage
+FROM node:18-alpine as build
 
 WORKDIR /app
 
@@ -7,11 +8,17 @@ RUN npm install
 
 COPY . .
 
-# Ajusta a URL da API para produção
-ENV REACT_APP_API_URL=http://147.79.83.158:3006
-
 RUN npm run build
+
+# Production stage
+FROM nginx:alpine
+
+# Copiar os arquivos estáticos para o diretório correto do Nginx
+COPY --from=build /app/build /usr/share/nginx/html
+
+# Copiar a configuração do Nginx
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 3000
 
-CMD ["npm", "start"]
+CMD ["nginx", "-g", "daemon off;"]

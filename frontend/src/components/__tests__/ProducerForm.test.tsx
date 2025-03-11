@@ -2,36 +2,50 @@ import '@testing-library/jest-dom';
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import ProducerForm from '../ProducerForm';
-import { Producer } from '../../types/Producer';
+import { Producer } from '../../types/producer.types';
 
 describe('ProducerForm', () => {
+  const mockProducer: Producer = {
+    id: 1,
+    name: 'João Silva',
+    document: '123.456.789-00',
+    farmName: 'Fazenda São João',
+    city: 'São Paulo',
+    state: 'SP',
+    totalArea: 1000,
+    arableArea: 800,
+    vegetationArea: 200,
+    harvests: [
+      {
+        id: 1,
+        year: 2024,
+        crops: [
+          { id: 1, cropName: 'Soja' }
+        ]
+      }
+    ]
+  };
+
   const mockOnClose = jest.fn();
   const mockOnSuccess = jest.fn();
 
-  const producer: Producer = {
-    name: 'Produtor Teste',
-    document: '12345678901',
-    farmName: 'Fazenda Teste',
-    city: 'Cidade Teste',
-    state: 'SP',
-    totalArea: 100,
-    arableArea: 60,
-    vegetationArea: 40,
-    crops: ['Soja'],
-  };
+  it('should render form with producer data', () => {
+    render(
+      <ProducerForm
+        producer={mockProducer}
+        onClose={mockOnClose}
+        onSuccess={mockOnSuccess}
+      />
+    );
 
-  test('deve renderizar o formulário corretamente', () => {
-    render(<ProducerForm onClose={mockOnClose} onSuccess={mockOnSuccess} producer={producer} />);
-
-    expect(screen.getByLabelText(/nome/i)).toHaveValue(producer.name);
-    expect(screen.getByLabelText(/cpf\/cnpj/i)).toHaveValue(producer.document);
-    expect(screen.getByLabelText(/nome da fazenda/i)).toHaveValue(producer.farmName);
-    expect(screen.getByLabelText(/cidade/i)).toHaveValue(producer.city);
-    expect(screen.getByLabelText(/estado/i)).toHaveValue(producer.state);
-    expect(screen.getByLabelText(/área total \(ha\)/i)).toHaveValue(producer.totalArea);
-    expect(screen.getByLabelText(/área agricultável \(ha\)/i)).toHaveValue(producer.arableArea);
-    expect(screen.getByLabelText(/área de vegetação \(ha\)/i)).toHaveValue(producer.vegetationArea);
-    expect(screen.getByLabelText(/culturas/i)).toHaveValue(producer.crops);
+    expect(screen.getByLabelText(/nome/i)).toHaveValue(mockProducer.name);
+    expect(screen.getByLabelText(/cpf\/cnpj/i)).toHaveValue(mockProducer.document);
+    expect(screen.getByLabelText(/nome da fazenda/i)).toHaveValue(mockProducer.farmName);
+    expect(screen.getByLabelText(/cidade/i)).toHaveValue(mockProducer.city);
+    expect(screen.getByLabelText(/estado/i)).toHaveValue(mockProducer.state);
+    expect(screen.getByLabelText(/área total/i)).toHaveValue(mockProducer.totalArea);
+    expect(screen.getByLabelText(/área agricultável/i)).toHaveValue(mockProducer.arableArea);
+    expect(screen.getByLabelText(/área de vegetação/i)).toHaveValue(mockProducer.vegetationArea);
   });
 
   test('deve chamar onClose quando o botão Cancelar é clicado', () => {
