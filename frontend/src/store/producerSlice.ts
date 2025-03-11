@@ -1,6 +1,6 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { Producer } from '../types/Producer';
+import { Producer } from '../types/producer.types';
 
 interface ProducerState {
   producers: Producer[];
@@ -33,7 +33,23 @@ export const deleteProducer = createAsyncThunk(
 const producerSlice = createSlice({
   name: 'producer',
   initialState,
-  reducers: {},
+  reducers: {
+    setProducers: (state, action: PayloadAction<Producer[]>) => {
+      state.producers = action.payload;
+    },
+    addProducer: (state, action: PayloadAction<Producer>) => {
+      state.producers.push(action.payload);
+    },
+    updateProducer: (state, action: PayloadAction<Producer>) => {
+      const index = state.producers.findIndex(p => p.id === action.payload.id);
+      if (index !== -1) {
+        state.producers[index] = action.payload;
+      }
+    },
+    removeProducer: (state, action: PayloadAction<number>) => {
+      state.producers = state.producers.filter(p => p.id !== action.payload);
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchProducers.pending, (state) => {
@@ -56,4 +72,5 @@ const producerSlice = createSlice({
   },
 });
 
+export const { setProducers, addProducer, updateProducer, removeProducer } = producerSlice.actions;
 export default producerSlice.reducer; 

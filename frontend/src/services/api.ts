@@ -13,7 +13,7 @@ export const producerApi = {
   create: (data: any) => api.post('/produtores', data),
   update: (id: number, data: any) => api.put(`/produtores/${id}`, data),
   delete: (id: number) => api.delete(`/produtores/${id}`),
-  getDashboard: () => api.get('/dashboard'),
+  getDashboard: () => api.get('/produtores/dashboard'),
 };
 
 export default api;

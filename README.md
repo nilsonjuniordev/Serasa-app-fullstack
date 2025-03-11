@@ -1,188 +1,205 @@
-# Brain Agriculture
+# 🌾 Brain Agriculture
 
-Sistema de gerenciamento de produtores rurais desenvolvido com React, Node.js e PostgreSQL.
+Sistema de gerenciamento de produtores rurais com dashboard analítico e gestão de safras.
 
-## Requisitos para rodar o sistema
+<div align="center">
 
-- Node.js 14+
+![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
+![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
+![NestJS](https://img.shields.io/badge/nestjs-%23E0234E.svg?style=for-the-badge&logo=nestjs&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/postgresql-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white)
+![Jest](https://img.shields.io/badge/-jest-%23C21325?style=for-the-badge&logo=jest&logoColor=white)
+
+</div>
+
+## 📋 Índice
+
+- [Sobre](#-sobre)
+- [Tecnologias](#-tecnologias)
+- [Funcionalidades](#-funcionalidades)
+- [Arquitetura](#-arquitetura)
+- [Instalação](#-instalação)
+- [Como Usar](#-como-usar)
+- [Testes](#-testes)
+- [Design Patterns](#-design-patterns)
+- [API Documentation](#-api-documentation)
+- [�� Docker](#-docker)
+
+## 🎯 Sobre
+
+Brain Agriculture é um sistema completo para gestão de produtores rurais, permitindo o cadastro de produtores e suas respectivas safras, além de fornecer um dashboard analítico com informações relevantes sobre as fazendas, culturas e uso do solo.
+
+### URLs de Produção
+
+- Frontend: `http://147.79.83.158:3005`
+- Backend: `http://147.79.83.158:3006`
+
+## 🚀 Tecnologias
+
+### Frontend
+- React 18.x
+- TypeScript 4.x
+- Material UI 5.x
+- Redux Toolkit
+- Chart.js
+- Axios
+- React Router DOM
+- Styled Components
+- React Toastify
+- Jest & Testing Library
+
+### Backend
+- NestJS
+- TypeScript
+- TypeORM
+- PostgreSQL
+- Class Validator
+- Jest
+- Swagger
+
+## ✨ Funcionalidades
+
+### Dashboard
+- Visualização total de fazendas
+- Gráfico de fazendas por estado
+- Gráfico de culturas mais plantadas
+- Análise de uso do solo
+- Gráfico de safras por ano
+- Dados totalmente responsivos
+
+### Gestão de Produtores
+- CRUD completo de produtores
+- Validação de CPF/CNPJ
+- Gestão de safras por produtor
+- Múltiplas culturas por safra
+- Interface responsiva
+- Feedback visual com toasts
+
+## 🏗 Arquitetura
+
+### Frontend
+```
+src/
+├── components/      # Componentes reutilizáveis
+├── pages/          # Páginas da aplicação
+├── services/       # Serviços e API
+├── store/          # Redux store e slices
+├── types/          # TypeScript interfaces
+├── utils/          # Funções utilitárias
+└── theme/          # Configuração do tema
+```
+
+### Backend
+```
+src/
+├── producers/      # Módulo de produtores
+│   ├── controllers/
+│   ├── services/
+│   ├── entities/
+│   └── dto/
+├── migrations/     # Migrações do banco
+└── config/        # Configurações
+```
+
+## 🔧 Instalação
+
+### Pré-requisitos
+- Node.js 16+
 - PostgreSQL 12+
 - NPM ou Yarn
 
-O projeto está dividido em duas partes:
-
-- `backend`: API REST desenvolvida com Node.js, Express, TypeORM e PostgreSQL
-- `frontend`: Interface web desenvolvida com React, Redux e TypeScript
-
-## Estrutura do Projeto (Monorepo)
-
-O projeto utiliza uma estrutura monorepo, onde frontend e backend estão no mesmo repositório:
-
-```
-brain-agriculture/
-├── frontend/                # Aplicação React
-│   ├── src/
-│   ├── public/
-│   ├── package.json
-│   └── tsconfig.json
-│
-├── backend/                 # API Node.js
-│   ├── src/
-│   │   ├── controllers/
-│   │   ├── services/
-│   │   ├── entities/
-│   │   └── migrations/
-│   ├── package.json
-│   └── tsconfig.json
-│
-├── package.json            # Scripts compartilhados
-├── .gitignore
-├── .env.example
-└── README.md
-```
-
-## Banco de Dados e ORM
-
-### Configuração do Banco
-O projeto utiliza PostgreSQL como banco de dados principal, gerenciado pelo TypeORM, um ORM robusto para TypeScript e JavaScript.
-
-### Migrations e Entidades
-O TypeORM está configurado com sistema de migrations para versionamento do banco de dados:
-
-1. Gerar uma nova migration:
+### Frontend
 ```bash
-npm run typeorm migration:generate
+# Entrar na pasta do frontend
+cd frontend
+
+# Instalar dependências
+npm install
+
+# Configurar variáveis de ambiente
+cp .env.example .env
 ```
-
-2. Executar migrations pendentes:
-```bash
-npm run typeorm migration:run
-```
-
-3. Reverter última migration:
-```bash
-npm run typeorm migration:revert
-```
-
-### Estrutura das Tabelas
-O TypeORM gera automaticamente as tabelas baseadas nas entidades TypeScript. Principais entidades:
-
-- **Producer (Produtor)**
-  - id: number (PK)
-  - name: string
-  - document: string (CPF/CNPJ)
-  - farmName: string
-  - city: string
-  - state: string
-  - totalArea: number
-  - arableArea: number
-  - vegetationArea: number
-  - crops: string[]
-
-### Validações no Banco
-- Validações automáticas via TypeORM e Class Validator
-- Constraints de chave primária e foreign key
-- Validações de tipos de dados
-- Checks para áreas (não podem ser negativas)
-- Validações de documento (CPF/CNPJ)
-
-### Conexão com o Banco
-A conexão é gerenciada pelo TypeORM através do arquivo `data-source.ts`:
-```typescript
-{
-  type: "postgres",
-  host: process.env.DB_HOST,
-  port: Number(process.env.DB_PORT),
-  username: process.env.DB_USERNAME,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_DATABASE,
-  synchronize: false, //Atenção aqui: *Desativado em produção
-  logging: true,
-  entities: [...],
-  migrations: [...],
-}
-```
-
-## Configuração e Instalação
 
 ### Backend
-
-1. Entre na pasta do backend:
 ```bash
-cd backend
-```
+# Entrar na pasta do backend
+cd backend-nest
 
-2. Instale as dependências:
-```bash
+# Instalar dependências
 npm install
+
+# Configurar variáveis de ambiente
+cp .env.example .env
+
+# Rodar migrações
+npm run migration:run
 ```
 
-3. Configure as variáveis de ambiente no arquivo `.env`:
-```
-DB_HOST=localhost
-DB_PORT=5432
-DB_USERNAME=postgres
-DB_PASSWORD=postgres
-DB_DATABASE=brain_agriculture
-```
+## 🎮 Como Usar
 
-4. Inicie o servidor:
+### Desenvolvimento
+
 ```bash
-npm run dev # Atenção aqui: executar run dev para iniciar o server corretamente
+# Frontend (http://localhost:3000)
+cd frontend
+npm start
+
+# Backend (http://localhost:3006)
+cd backend-nest
+npm run start:dev
 ```
-O servidor estará rodando na porta `3006`
+
+### Produção
+
+```bash
+# Frontend
+cd frontend
+npm run build
+
+# Backend
+cd backend-nest
+npm run build
+npm run start:prod
+```
+
+## 🧪 Testes
 
 ### Frontend
-
-1. Entre na pasta do frontend:
 ```bash
-cd frontend
+# Rodar todos os testes
+npm test
+
+# Cobertura
+npm run test:coverage
+
+# Modo watch
+npm run test:watch
 ```
-
-2. Instale as dependências:
-```bash
-npm install
-```
-
-3. Inicie a aplicação:
-```bash
-npm start # Atenção aqui: Iniciar a aplicação somente após iniciar o backend para não dar conflito de porta
-```
-
-A aplicação estará rodando na porta `3005`, ou na porta disponível
-
-## Funcionalidades
-
-- Cadastro, edição e exclusão de produtores rurais
-- Validação de CPF e CNPJ com formatação automática
-- Validação de áreas da fazenda
-- Dashboard com:
-  - Total de fazendas
-  - Total de área em hectares
-  - Gráfico de distribuição por estado
-  - Gráfico de distribuição por cultura
-  - Gráfico de uso do solo
-- Interface responsiva (Desktop e Mobile)
-- Feedback visual com toasts para ações do usuário
-
-## Tecnologias Utilizadas
 
 ### Backend
-- Node.js com TypeScript
-- Express para API REST
-- TypeORM para ORM
-- PostgreSQL como banco de dados
-- Class Validator para validação de dados
-- Cors para segurança
-- Dotenv para variáveis de ambiente
-- Sistema de Migrations
-- Reflect Metadata
+```bash
+# Testes unitários
+npm run test
 
-## Docker
+# Testes e2e
+npm run test:e2e
 
-O projeto utiliza Docker para containerização com três serviços principais:
-- Frontend (brain-agriculture-frontend): Porta 3005
-- Backend (brain-agriculture-backend): Porta 3006
-- PostgreSQL (brain-agriculture-postgres): Porta 5432
+# Cobertura
+npm run test:cov
+```
+
+## 🎨 Design Patterns
+
+- **Repository Pattern**: Abstração do acesso ao banco de dados
+- **DTO Pattern**: Validação e transferência de dados
+- **Dependency Injection**: Inversão de controle
+- **Factory Pattern**: Criação de objetos
+- **Observer Pattern**: Gerenciamento de estado com Redux
+- **Strategy Pattern**: Validações diferentes para CPF/CNPJ
+- **Decorator Pattern**: Validações com class-validator
+- **Singleton Pattern**: Conexão com banco de dados
+
+## 📚 API Documentation
 
 ## APIs Disponíveis
 
@@ -196,103 +213,181 @@ Base URL: `http://147.79.83.158:3006`
 - Produtores: `http://147.79.83.158:3006/produtores`
   - Lista e gerencia informações dos produtores rurais
 
-### URLs de Produção
+
+### Principais Endpoints
+
+```
+GET    /produtores           # Lista todos os produtores
+POST   /produtores           # Cria novo produtor
+GET    /produtores/:id       # Busca produtor por ID
+PUT    /produtores/:id       # Atualiza produtor
+DELETE /produtores/:id       # Remove produtor
+GET    /produtores/dashboard # Dados do dashboard
+```
+
+## 🔐 Variáveis de Ambiente
+
+### Frontend (.env)
+```env
+REACT_APP_API_URL=http://localhost:3006
+```
+
+### Backend (.env)
+```env
+DB_HOST=localhost
+DB_PORT=5432
+DB_USERNAME=postgres
+DB_PASSWORD=your_password
+DB_DATABASE=brain_agriculture
+```
+
+## 🐳 Docker
+
+### Pré-requisitos
+- Docker 20.10+
+- Docker Compose 2.0+
+
+### Configuração Inicial
+
+1. Clone o repositório:
+```bash
+git clone <seu-repositorio>
+cd brain-agriculture
+```
+
+2. Configure as variáveis de ambiente:
+```bash
+# Frontend (.env)
+REACT_APP_API_URL=http://147.79.83.158:3006
+
+# Backend (.env)
+DB_HOST=postgres
+DB_PORT=5432
+DB_USERNAME=postgres
+DB_PASSWORD=Be111290@#
+DB_DATABASE=brain_agriculture
+```
+
+### Rodando com Docker
+
+1. Construir e iniciar os containers:
+```bash
+# Construir as imagens
+docker-compose build
+
+# Iniciar os serviços
+docker-compose up -d
+```
+
+2. Verificar os logs:
+```bash
+# Todos os serviços
+docker-compose logs -f
+
+# Serviço específico
+docker-compose logs -f backend
+docker-compose logs -f frontend
+docker-compose logs -f postgres
+```
+
+3. Parar os serviços:
+```bash
+docker-compose down
+```
+
+### Gerenciamento do Banco de Dados
+
+1. Acessar o PostgreSQL:
+```bash
+docker exec -it brain-agriculture-postgres psql -U postgres -d brain_agriculture
+```
+
+2. Executar migrações:
+```bash
+# Dentro do container do backend
+docker exec -it brain-agriculture-backend npm run migration:run
+```
+
+3. Reverter última migração:
+```bash
+docker exec -it brain-agriculture-backend npm run migration:revert
+```
+
+4. Backup do banco:
+```bash
+# Criar backup
+docker exec brain-agriculture-postgres pg_dump -U postgres brain_agriculture > backup.sql
+
+# Restaurar backup
+docker exec -i brain-agriculture-postgres psql -U postgres brain_agriculture < backup.sql
+```
+
+### Portas e Acessos
 
 - Frontend: `http://147.79.83.158:3005`
 - Backend: `http://147.79.83.158:3006`
+- Swagger: `http://147.79.83.158:3006/api`
+- PostgreSQL: `5432` (interno)
 
-### Frontend
-- React 
-- TypeScript
-- Material-UI (MUI) para componentes
-- Redux Toolkit para gerenciamento de estado
-- Styled Components para estilização
-- Chart.js para gráficos
-- Axios para requisições HTTP
-- React Router DOM para roteamento
-- React Toastify para notificações
-- Jest e Testing Library para testes
+### Comandos Úteis
 
-## Boas Práticas Implementadas
-
-### Arquitetura e Design
-- Clean Code
-- SOLID Principles
-- Arquitetura em camadas (Controllers, Services, Entities)
-- Design Patterns (Repository Pattern)
-- Componentização React
-- Tipagem forte com TypeScript
-
-### Qualidade de Código
-- Validações no frontend e backend
-- Tratamento de erros centralizado
-- Logging de operações
-- Testes unitários
-- Code Splitting
-- Lazy Loading
-
-### Segurança
-- Validação de dados
-- Sanitização de inputs
-- CORS configurado
-- Tratamento de erros sem exposição de dados sensíveis
-
-### UX/UI
-- Design responsivo
-- Feedback visual para ações
-- Formulários com validação em tempo real
-- Interface moderna e intuitiva
-- Temas customizados
-- Loading states
-- Tratamento de erros amigável
-
-### DevOps
-- Scripts NPM automatizados
-- Sistema de migrations
-- Ambiente de desenvolvimento configurado
-- Variáveis de ambiente
-
-### Controle de Versão e Git
-
-#### Estrutura de Branches
-- `main`: Branch principal, código em produção
-- `develop`: Branch de desenvolvimento
-- `feature/*`: Branches para novas funcionalidades
-- `hotfix/*`: Branches para correções urgentes
-- `release/*`: Branches para preparação de releases
-
-#### .gitignore na raiz do projeto
-
-#### Workflow Recomendado
-1. Crie uma branch para sua feature:
+1. Reiniciar um serviço:
 ```bash
-git checkout -b feature/nome-da-feature
+docker-compose restart backend
+docker-compose restart frontend
+docker-compose restart postgres
 ```
 
-2. Faça commits frequentes e descritivos:
+2. Ver logs em tempo real:
 ```bash
-git add .
-git commit -m "feat(escopo): descrição clara da mudança"
+docker-compose logs -f --tail=100
 ```
 
-3. Mantenha sua branch atualizada:
+3. Verificar status dos containers:
 ```bash
-git pull origin develop
+docker-compose ps
 ```
 
-4. Ao finalizar, faça o merge request/pull request para develop
+4. Limpar volumes (⚠️ apaga dados):
+```bash
+docker-compose down -v
+```
 
-Feito com dedicação e paixão por tecnologia e programação!
+### Troubleshooting
 
-Atenciosamente,
-Nilson Junior
-Senior Fullstack Developer
+1. Se o frontend não conectar ao backend:
+- Verifique se a variável `REACT_APP_API_URL` está correta
+- Confirme se o backend está rodando: `docker-compose ps`
+- Verifique os logs: `docker-compose logs backend`
+
+2. Se o backend não conectar ao banco:
+- Aguarde alguns segundos após subir os containers
+- Verifique as credenciais no `.env`
+- Confira os logs: `docker-compose logs postgres`
+
+3. Para resetar completamente:
+```bash
+# Parar todos os containers
+docker-compose down
+
+# Remover volumes
+docker-compose down -v
+
+# Reconstruir
+docker-compose up -d --build
+```
+
+---
+
+Feito com ♥ por Nilson Junior
 
 
 # Screenshots da aplicação 
 
 
 ![DashBoard](Serasa-Brain-Agriculture-front-1.png)
+
+![DashBoard](Serasa-Brain-Agriculture-front-1-1.png)
 
 ![Cadastro](Serasa-Brain-Agriculture-front-2.png)
 
