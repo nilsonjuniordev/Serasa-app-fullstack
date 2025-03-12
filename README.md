@@ -203,11 +203,11 @@ npm run test:cov
 
 ## APIs Disponíveis
 
-Base URL: `http://147.79.83.158:3006`
+Base URL: `http://147.79.83.158:3006/produtores/`
 
 ### Endpoints
 
-- Dashboard: `http://147.79.83.158:3006/dashboard`
+- Dashboard: `http://147.79.83.158:3006/produtores/dashboard`
   - Retorna estatísticas gerais e dados para gráficos
 
 - Produtores: `http://147.79.83.158:3006/produtores`
